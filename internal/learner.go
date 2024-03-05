@@ -64,14 +64,12 @@ func (l *Learner) Receive(from string, message Message) {
 			nodes[from] = struct{}{}
 			l.accepted[number_] = nodes
 
-			log.Printf("In if %s has %d acceptors accepted number %d, current acceptors: %v\n", l.NodeID_, len(l.accepted[number_]), number_, l.acceptors)
 			if len(l.accepted[number_]) == l.quorum {
 				l.finished = true
 				l.Result = &Proposal{
 					Number: number_,
 					Value:  msg.Value,
 				}
-				log.Printf("%s finished with result %#v", l.NodeID_, l.Result)
 				close(l.done) // notify all observers
 			}
 			return
@@ -90,15 +88,12 @@ func (l *Learner) Receive(from string, message Message) {
 			}
 			nodes[from] = struct{}{}
 			l.accepted[number_] = nodes
-
-			log.Printf("Out of if %s' acceptors accepted number %d: %v, current acceptors: %v\n", l.NodeID_, number_, l.accepted[number_], l.acceptors)
 			if len(l.accepted[number_]) == l.quorum {
 				l.finished = true
 				l.Result = &Proposal{
 					Number: number_,
 					Value:  msg.Value,
 				}
-				log.Printf("%s finished with result %#v", l.NodeID_, l.Result)
 				close(l.done)
 			}
 			return
