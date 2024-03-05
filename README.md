@@ -72,5 +72,5 @@ func RunPaxos() error {
 # Run the program
 
 ```shell
-go run main.go
+go run .
 ```
