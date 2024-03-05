@@ -41,7 +41,7 @@ func (a *Acceptor) Receive(from string, message Message) {
 	case PrepareMessage:
 		a.Lock()
 		defer a.Unlock()
-		log.Printf("%s receivied prepare message %#v from %s\n", a.NodeID_, msg, from)
+		log.Printf("%s receivied prepare message %v from %s\n", a.NodeID_, msg, from)
 		if a.highestPromised == nil || a.highestPromised.Number < msg.Number {
 			promise := PromiseMessage{
 				Number: msg.Number,
@@ -58,7 +58,7 @@ func (a *Acceptor) Receive(from string, message Message) {
 	case AcceptMessage:
 		a.Lock()
 		defer a.Unlock()
-		log.Printf("%s receivied accept message %#v from %s\n", a.NodeID_, msg, from)
+		log.Printf("%s receivied accept message %v from %s\n", a.NodeID_, msg, from)
 		if a.highestPromised == nil || a.highestPromised.Number <= msg.Number {
 			a.highestAccepted = &Proposal{Number: msg.Number, Value: msg.Value}
 			decide := DecideMessage(msg)

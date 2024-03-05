@@ -69,7 +69,7 @@ func (p *Proposer) Receive(from string, message Message) {
 
 	switch msg := message.(type) {
 	case PromiseMessage:
-		log.Printf("%s received promise message %#v from %s\n", p.NodeID_, msg, from)
+		log.Printf("%s received promise message %v from %s\n", p.NodeID_, msg, from)
 		if p.number != msg.Number {
 			return
 		}

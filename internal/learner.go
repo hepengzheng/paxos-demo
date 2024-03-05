@@ -50,7 +50,7 @@ func (l *Learner) Receive(from string, message Message) {
 	case DecideMessage:
 		l.Lock()
 		defer l.Unlock()
-		log.Printf("%s received decide message %#v from %s\n", l.NodeID_, msg, from)
+		log.Printf("%s received decide message %v from %s\n", l.NodeID_, msg, from)
 		if l.finished {
 			return
 		}
