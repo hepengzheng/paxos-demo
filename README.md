@@ -5,21 +5,26 @@ As the name suggests, this project is a demonstration of the Basic Paxos algorit
 ## Demo
 
 ```go
-func RunPaxos() error {
+func main() {
 
-	messenger := internal.NewMessenger()
+	possibilityToDropMsg := float32(0.3)
+	messenger := internal.NewMessenger(possibilityToDropMsg)
 	proposalID := internal.NewProposalID()
 	quorum := 3
 
+	// three nodes as proposers
 	proposer1 := internal.NewProposer("proposer-1", quorum, messenger, proposalID)
 	proposer2 := internal.NewProposer("proposer-2", quorum, messenger, proposalID)
 	proposer3 := internal.NewProposer("proposer-3", quorum, messenger, proposalID)
 
+	// five nodes as acceptors
 	acceptor1 := internal.NewAcceptor("acceptor-1", messenger)
 	acceptor2 := internal.NewAcceptor("acceptor-2", messenger)
 	acceptor3 := internal.NewAcceptor("acceptor-3", messenger)
 	acceptor4 := internal.NewAcceptor("acceptor-4", messenger)
 	acceptor5 := internal.NewAcceptor("acceptor-5", messenger)
+
+	// three nodes as learners
 	learner1 := internal.NewLearner("learner-1", quorum, messenger)
 	learner2 := internal.NewLearner("learner-2", quorum, messenger)
 	learner3 := internal.NewLearner("learner-3", quorum, messenger)
@@ -61,10 +66,6 @@ func RunPaxos() error {
 	}
 
 	log.Printf("Results: %v\n", results)
-	if len(numbers) != 1 {
-		return errors.New("paxos failed")
-	}
-	return nil
 }
 ```
 

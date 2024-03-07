@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"log"
 	"math/rand"
 	"sync"
 	"time"
@@ -17,18 +18,23 @@ type Messenger interface {
 
 type MessengerImpl struct {
 	sync.Mutex
-	nodes     map[string]Node // all nodes
-	acceptors map[string]Node // only acceptors
-	learners  map[string]Node // only learners
+	nodes                    map[string]Node // all nodes
+	acceptors                map[string]Node // only acceptors
+	learners                 map[string]Node // only learners
+	possibilityToDropMessage float32
 }
 
 var _ Messenger = (*MessengerImpl)(nil)
 
-func NewMessenger() Messenger {
+func NewMessenger(possibilityToDropMessage float32) Messenger {
+	if possibilityToDropMessage > 1 || possibilityToDropMessage < 0 {
+		log.Fatalf("invalid possibilityToDropMessage: %f\n", possibilityToDropMessage)
+	}
 	return &MessengerImpl{
-		nodes:     make(map[string]Node),
-		acceptors: make(map[string]Node),
-		learners:  make(map[string]Node),
+		nodes:                    make(map[string]Node),
+		acceptors:                make(map[string]Node),
+		learners:                 make(map[string]Node),
+		possibilityToDropMessage: possibilityToDropMessage,
 	}
 }
 
@@ -52,7 +58,10 @@ func (m *MessengerImpl) BroadCastToAllAcceptors(from string, message Message) {
 	for _, a := range m.acceptors {
 		acceptor := a
 		go func() {
-			timeoutRequest()
+			if m.mapDropOrDelayMessage() {
+				log.Printf("message %v from %s to acceptor %s was dropped\n", message, from, acceptor.NodeID())
+				return
+			}
 			acceptor.Receive(from, message)
 		}()
 	}
@@ -62,7 +71,9 @@ func (m *MessengerImpl) BroadCastToAcceptors(from string, acceptors []string, me
 	for _, acceptorID := range acceptors {
 		if acceptor, ok := m.acceptors[acceptorID]; ok {
 			go func() {
-				<-time.After(time.Duration(rand.Intn(30)+10) * time.Millisecond)
+				if m.mapDropOrDelayMessage() {
+					log.Printf("message %v from %s to acceptor %s was dropped\n", message, from, acceptor.NodeID())
+				}
 				acceptor.Receive(from, message)
 			}()
 		}
@@ -73,7 +84,10 @@ func (m *MessengerImpl) BroadCastToLearners(from string, message DecideMessage) 
 	for _, l := range m.learners {
 		learner := l
 		go func() {
-			<-time.After(time.Duration(rand.Intn(30)+10) * time.Millisecond)
+			if m.mapDropOrDelayMessage() {
+				log.Printf("message %v from %s to learner %s was dropped\n", message, from, learner.NodeID())
+				return
+			}
 			learner.Receive(from, message)
 		}()
 	}
@@ -82,7 +96,10 @@ func (m *MessengerImpl) BroadCastToLearners(from string, message DecideMessage) 
 func (m *MessengerImpl) UniCast(from, to string, message Message) {
 	if node, ok := m.nodes[to]; ok {
 		go func() {
-			timeoutRequest()
+			if m.mapDropOrDelayMessage() {
+				log.Printf("message %v from %s to %s was dropped\n", message, from, to)
+				return
+			}
 			node.Receive(from, message)
 		}()
 	}
@@ -100,6 +117,8 @@ func (m *MessengerImpl) QueryFinished() <-chan struct{} {
 	return ch
 }
 
-func timeoutRequest() time.Time {
-	return <-time.After(time.Duration(rand.Intn(30)+10) * time.Millisecond)
+func (m *MessengerImpl) mapDropOrDelayMessage() bool {
+	r := rand.Intn(100)
+	<-time.After(time.Duration(r) * time.Millisecond)
+	return m.possibilityToDropMessage*100 > float32(r)
 }
