@@ -85,7 +85,7 @@ func (m *MessengerImpl) BroadCastToLearners(from string, message DecideMessage) 
 		learner := l
 		go func() {
 			if m.mapDropOrDelayMessage() {
-				log.Printf("message %v from %s to learner %s was dropped\n", message, from, learner.NodeID())
+				log.Printf("message %v from %s to %s was dropped\n", message, from, learner.NodeID())
 				return
 			}
 			learner.Receive(from, message)

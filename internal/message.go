@@ -15,7 +15,7 @@ type PrepareMessage struct {
 }
 
 func (p *PrepareMessage) String() string {
-	return fmt.Sprintf("PrepareMessage(number=%d)", p.Number)
+	return fmt.Sprintf("PrepareMessage(%d)", p.Number)
 }
 
 type PromiseMessage struct {
@@ -25,9 +25,9 @@ type PromiseMessage struct {
 
 func (p *PromiseMessage) String() string {
 	if p.HighestAccepted == nil {
-		return fmt.Sprintf("PromiseMessage(Number=%d)", p.Number)
+		return fmt.Sprintf("PromiseMessage(%d)", p.Number)
 	}
-	return fmt.Sprintf("PromiseMessage(Number=%d, Value=%s)", p.Number, p.HighestAccepted)
+	return fmt.Sprintf("PromiseMessage(%d, %s)", p.Number, p.HighestAccepted)
 }
 
 type AcceptMessage struct {
@@ -36,7 +36,7 @@ type AcceptMessage struct {
 }
 
 func (a *AcceptMessage) String() string {
-	return fmt.Sprintf("AcceptMessage(Number=%d, Value=%s)", a.Number, a.Value)
+	return fmt.Sprintf("AcceptMessage(%d, %s)", a.Number, a.Value)
 }
 
 type DecideMessage struct {
@@ -45,7 +45,7 @@ type DecideMessage struct {
 }
 
 func (d *DecideMessage) String() string {
-	return fmt.Sprintf("DecideMessage(Number=%d, Value=%s)", d.Number, d.Value)
+	return fmt.Sprintf("DecideMessage(%d, %s)", d.Number, d.Value)
 }
 
 var _ Message = (*PrepareMessage)(nil)
@@ -62,5 +62,5 @@ func (p *Proposal) String() string {
 	if p == nil {
 		return "nil"
 	}
-	return fmt.Sprintf("Proposal(Number=%d, Value=%s)", p.Number, p.Value)
+	return fmt.Sprintf("Proposal(%d, %s)", p.Number, p.Value)
 }
