@@ -9,8 +9,8 @@ import (
 
 func main() {
 
-	possibilityToDropMsg := float32(0.3)
-	messenger := internal.NewMessenger(possibilityToDropMsg)
+	probabilityOfDroppingMsg := float32(0.3)
+	messenger := internal.NewMessenger(probabilityOfDroppingMsg)
 	proposalID := internal.NewProposalID()
 	quorum := 3
 

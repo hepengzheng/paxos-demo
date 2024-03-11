@@ -18,23 +18,23 @@ type Messenger interface {
 
 type MessengerImpl struct {
 	sync.Mutex
-	nodes                    map[string]Node // all nodes
-	acceptors                map[string]Node // only acceptors
-	learners                 map[string]Node // only learners
-	possibilityToDropMessage float32
+	nodes                        map[string]Node // all nodes
+	acceptors                    map[string]Node // only acceptors
+	learners                     map[string]Node // only learners
+	probabilityOfDroppingMessage float32
 }
 
 var _ Messenger = (*MessengerImpl)(nil)
 
-func NewMessenger(possibilityToDropMessage float32) Messenger {
-	if possibilityToDropMessage > 1 || possibilityToDropMessage < 0 {
-		log.Fatalf("invalid possibilityToDropMessage: %f\n", possibilityToDropMessage)
+func NewMessenger(probabilityOfDroppingMessage float32) Messenger {
+	if probabilityOfDroppingMessage > 1 || probabilityOfDroppingMessage < 0 {
+		log.Fatalf("invalid probabilityOfDroppingMessage: %f\n", probabilityOfDroppingMessage)
 	}
 	return &MessengerImpl{
-		nodes:                    make(map[string]Node),
-		acceptors:                make(map[string]Node),
-		learners:                 make(map[string]Node),
-		possibilityToDropMessage: possibilityToDropMessage,
+		nodes:                        make(map[string]Node),
+		acceptors:                    make(map[string]Node),
+		learners:                     make(map[string]Node),
+		probabilityOfDroppingMessage: probabilityOfDroppingMessage,
 	}
 }
 
@@ -120,5 +120,5 @@ func (m *MessengerImpl) QueryFinished() <-chan struct{} {
 func (m *MessengerImpl) mapDropOrDelayMessage() bool {
 	r := rand.Intn(100)
 	<-time.After(time.Duration(r) * time.Millisecond)
-	return m.possibilityToDropMessage*100 > float32(r)
+	return m.probabilityOfDroppingMessage*100 > float32(r)
 }

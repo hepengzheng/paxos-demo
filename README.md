@@ -7,8 +7,8 @@ As the name suggests, this project is a demonstration of the Basic Paxos algorit
 ```go
 func main() {
 
-	possibilityToDropMsg := float32(0.3)
-	messenger := internal.NewMessenger(possibilityToDropMsg)
+	probabilityOfDroppingMsg := float32(0.3)
+	messenger := internal.NewMessenger(probabilityOfDroppingMsg)
 	proposalID := internal.NewProposalID()
 	quorum := 3
 
@@ -58,11 +58,9 @@ func main() {
 	wg.Wait()
 
 	// Collect the results
-	results := make([]internal.Proposal, 0, len(learners))
-	numbers := make(map[int64]string)
+	results := make([]string, 0, len(learners))
 	for _, learner := range learners {
-		results = append(results, *learner.Result)
-		numbers[learner.Result.Number] = learner.Result.Value
+		results = append(results, learner.Result.Value)
 	}
 
 	log.Printf("Results: %v\n", results)
